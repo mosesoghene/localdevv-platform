@@ -3,63 +3,72 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ServicePlan;
 use Illuminate\Http\Request;
 
 class ServicePlanController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $servicePlans = ServicePlan::latest()->paginate(15);
+        return view('admin.service-plans.index', compact('servicePlans'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('admin.service-plans.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:service_plans',
+            'description' => 'required|string',
+            'plan_type' => 'required|in:priority_support,installation_service,maintenance_plan,vip_support',
+            'price' => 'required|numeric|min:0',
+            'billing_interval' => 'required|in:monthly,quarterly,annually',
+            'features' => 'nullable|array',
+            'limits' => 'nullable|array',
+            'is_active' => 'boolean',
+        ]);
+
+        ServicePlan::create($validated);
+
+        return redirect()->route('admin.service-plans.index')
+            ->with('success', 'Service plan created successfully!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(ServicePlan $servicePlan)
     {
-        //
+        return view('admin.service-plans.edit', compact('servicePlan'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, ServicePlan $servicePlan)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:service_plans,slug,' . $servicePlan->id,
+            'description' => 'required|string',
+            'plan_type' => 'required|in:priority_support,installation_service,maintenance_plan,vip_support',
+            'price' => 'required|numeric|min:0',
+            'billing_interval' => 'required|in:monthly,quarterly,annually',
+            'features' => 'nullable|array',
+            'limits' => 'nullable|array',
+            'is_active' => 'boolean',
+        ]);
+
+        $servicePlan->update($validated);
+
+        return redirect()->route('admin.service-plans.index')
+            ->with('success', 'Service plan updated successfully!');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(ServicePlan $servicePlan)
     {
-        //
-    }
+        $servicePlan->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->route('admin.service-plans.index')
+            ->with('success', 'Service plan deleted successfully!');
     }
 }

@@ -3,63 +3,72 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Portfolio;
 use Illuminate\Http\Request;
 
 class PortfolioController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $portfolios = Portfolio::latest()->paginate(15);
+        return view('admin.portfolios.index', compact('portfolios'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('admin.portfolios.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:portfolios',
+            'description' => 'required|string',
+            'client_name' => 'nullable|string|max:255',
+            'project_url' => 'nullable|url',
+            'project_type' => 'required|in:web_development,mobile_app,custom_software,consulting',
+            'technologies_used' => 'nullable|array',
+            'completion_date' => 'nullable|date',
+            'is_featured' => 'boolean',
+        ]);
+
+        Portfolio::create($validated);
+
+        return redirect()->route('admin.portfolios.index')
+            ->with('success', 'Portfolio created successfully!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(Portfolio $portfolio)
     {
-        //
+        return view('admin.portfolios.edit', compact('portfolio'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, Portfolio $portfolio)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:portfolios,slug,' . $portfolio->id,
+            'description' => 'required|string',
+            'client_name' => 'nullable|string|max:255',
+            'project_url' => 'nullable|url',
+            'project_type' => 'required|in:web_development,mobile_app,custom_software,consulting',
+            'technologies_used' => 'nullable|array',
+            'completion_date' => 'nullable|date',
+            'is_featured' => 'boolean',
+        ]);
+
+        $portfolio->update($validated);
+
+        return redirect()->route('admin.portfolios.index')
+            ->with('success', 'Portfolio updated successfully!');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(Portfolio $portfolio)
     {
-        //
-    }
+        $portfolio->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->route('admin.portfolios.index')
+            ->with('success', 'Portfolio deleted successfully!');
     }
 }

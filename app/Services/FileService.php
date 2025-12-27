@@ -36,6 +36,14 @@ class FileService
     }
 
     /**
+     * Delete any file from private storage (alias for deleteProductFile)
+     */
+    public function deleteFile(string $path): bool
+    {
+        return $this->deleteProductFile($path);
+    }
+
+    /**
      * Check if file exists
      */
     public function fileExists(string $path): bool
