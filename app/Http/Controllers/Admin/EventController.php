@@ -4,10 +4,17 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
+use App\Services\FileService;
 use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
+    protected $fileService;
+
+    public function __construct(FileService $fileService)
+    {
+        $this->fileService = $fileService;
+    }
     public function index()
     {
         $events = Event::latest()->paginate(15);
@@ -32,7 +39,13 @@ class EventController extends Controller
             'max_attendees' => 'nullable|integer|min:1',
             'registration_url' => 'nullable|url',
             'is_published' => 'boolean',
+            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
+
+        // Upload featured image if provided
+        if ($request->hasFile('featured_image')) {
+            $validated['featured_image'] = $this->fileService->uploadImage($request->file('featured_image'), 'events');
+        }
 
         Event::create($validated);
 
@@ -58,7 +71,16 @@ class EventController extends Controller
             'max_attendees' => 'nullable|integer|min:1',
             'registration_url' => 'nullable|url',
             'is_published' => 'boolean',
+            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
+
+        // Upload new featured image if provided
+        if ($request->hasFile('featured_image')) {
+            if ($event->featured_image) {
+                $this->fileService->deleteImage($event->featured_image);
+            }
+            $validated['featured_image'] = $this->fileService->uploadImage($request->file('featured_image'), 'events');
+        }
 
         $event->update($validated);
 
@@ -68,6 +90,10 @@ class EventController extends Controller
 
     public function destroy(Event $event)
     {
+        if ($event->featured_image) {
+            $this->fileService->deleteImage($event->featured_image);
+        }
+        
         $event->delete();
 
         return redirect()->route('admin.events.index')

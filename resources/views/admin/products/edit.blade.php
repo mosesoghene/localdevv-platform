@@ -1,14 +1,8 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Edit Product') }}
-        </h2>
-    </x-slot>
+<x-admin-layout>
+    <x-slot name="header">Edit Product: {{ $product->name }}</x-slot>
 
-    <div class="py-12">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
+    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+        <div class="p-6">
                     <form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
@@ -129,6 +123,26 @@
                             @enderror
                         </div>
 
+                        <!-- Featured Image Upload -->
+                        <div class="mt-6">
+                            <label for="featured_image" class="block text-sm font-medium text-gray-700">Featured Image <span class="text-gray-500">Max: 2MB - Leave empty to keep current image</span></label>
+                            @if($product->featured_image)
+                                <div class="mt-2 mb-3">
+                                    <img src="{{ asset('storage/' . $product->featured_image) }}" alt="{{ $product->name }}" class="max-w-xs rounded-md border border-gray-300">
+                                    <p class="text-sm text-gray-500 mt-1">Current image</p>
+                                </div>
+                            @endif
+                            <input type="file" name="featured_image" id="featured_image" accept="image/*"
+                                class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                            @error('featured_image')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                            <div id="image-preview" class="mt-2 hidden">
+                                <img src="" alt="Preview" class="max-w-xs rounded-md border border-gray-300">
+                                <p class="text-sm text-gray-500 mt-1">New image preview</p>
+                            </div>
+                        </div>
+
                         <!-- Form Actions -->
                         <div class="mt-6 flex justify-end space-x-3">
                             <a href="{{ route('admin.products.index') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md">
@@ -152,5 +166,19 @@
                 .replace(/(^-|-$)/g, '');
             document.getElementById('slug').value = slug;
         });
+
+        // Image preview
+        document.getElementById('featured_image').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('image-preview');
+                    preview.querySelector('img').src = e.target.result;
+                    preview.classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        });
     </script>
-</x-app-layout>
+</x-admin-layout>

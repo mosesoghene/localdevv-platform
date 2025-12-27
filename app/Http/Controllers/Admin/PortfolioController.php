@@ -4,10 +4,17 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Portfolio;
+use App\Services\FileService;
 use Illuminate\Http\Request;
 
 class PortfolioController extends Controller
 {
+    protected $fileService;
+
+    public function __construct(FileService $fileService)
+    {
+        $this->fileService = $fileService;
+    }
     public function index()
     {
         $portfolios = Portfolio::latest()->paginate(15);
@@ -31,7 +38,12 @@ class PortfolioController extends Controller
             'technologies_used' => 'nullable|array',
             'completion_date' => 'nullable|date',
             'is_featured' => 'boolean',
+            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
+
+        if ($request->hasFile('featured_image')) {
+            $validated['featured_image'] = $this->fileService->uploadImage($request->file('featured_image'), 'portfolios');
+        }
 
         Portfolio::create($validated);
 
@@ -56,7 +68,15 @@ class PortfolioController extends Controller
             'technologies_used' => 'nullable|array',
             'completion_date' => 'nullable|date',
             'is_featured' => 'boolean',
+            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
+
+        if ($request->hasFile('featured_image')) {
+            if ($portfolio->featured_image) {
+                $this->fileService->deleteImage($portfolio->featured_image);
+            }
+            $validated['featured_image'] = $this->fileService->uploadImage($request->file('featured_image'), 'portfolios');
+        }
 
         $portfolio->update($validated);
 
@@ -66,6 +86,10 @@ class PortfolioController extends Controller
 
     public function destroy(Portfolio $portfolio)
     {
+        if ($portfolio->featured_image) {
+            $this->fileService->deleteImage($portfolio->featured_image);
+        }
+        
         $portfolio->delete();
 
         return redirect()->route('admin.portfolios.index')

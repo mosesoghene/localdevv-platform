@@ -47,11 +47,17 @@ class ProductController extends Controller
             'features' => 'nullable|array',
             'requirements' => 'nullable|array',
             'file' => 'required|file|mimetypes:application/zip,application/x-rar-compressed,application/x-7z-compressed|max:512000',
+            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
         // Upload file
         $filePath = $this->fileService->uploadProductFile($request->file('file'));
         $validated['file_path'] = $filePath;
+
+        // Upload featured image if provided
+        if ($request->hasFile('featured_image')) {
+            $validated['featured_image'] = $this->fileService->uploadImage($request->file('featured_image'), 'products');
+        }
 
         Product::create($validated);
 
@@ -80,6 +86,7 @@ class ProductController extends Controller
             'features' => 'nullable|array',
             'requirements' => 'nullable|array',
             'file' => 'nullable|file|mimetypes:application/zip,application/x-rar-compressed,application/x-7z-compressed|max:512000',
+            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
         // Upload new file if provided
@@ -88,6 +95,15 @@ class ProductController extends Controller
             $this->fileService->deleteFile($product->file_path);
             // Upload new file
             $validated['file_path'] = $this->fileService->uploadProductFile($request->file('file'));
+        }
+
+        // Upload new featured image if provided
+        if ($request->hasFile('featured_image')) {
+            // Delete old image if exists
+            if ($product->featured_image) {
+                $this->fileService->deleteImage($product->featured_image);
+            }
+            $validated['featured_image'] = $this->fileService->uploadImage($request->file('featured_image'), 'products');
         }
 
         $product->update($validated);
@@ -100,6 +116,11 @@ class ProductController extends Controller
     {
         // Delete file
         $this->fileService->deleteFile($product->file_path);
+        
+        // Delete featured image if exists
+        if ($product->featured_image) {
+            $this->fileService->deleteImage($product->featured_image);
+        }
         
         $product->delete();
 

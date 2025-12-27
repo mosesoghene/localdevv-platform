@@ -1,9 +1,8 @@
-<x-app-layout>
-    <x-slot name="header"><h2 class="font-semibold text-xl text-gray-800 leading-tight">Create Portfolio</h2></x-slot>
-    <div class="py-12">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+<x-admin-layout>
+    <x-slot name="header">Create Portfolio</x-slot>
+    
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                <form action="{{ route('admin.portfolios.store') }}" method="POST">
+                <form action="{{ route('admin.portfolios.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
@@ -44,6 +43,13 @@
                         <label class="block text-sm font-medium text-gray-700">Description *</label>
                         <textarea name="description" rows="4" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">{{ old('description') }}</textarea>
                     </div>
+                    <div class="mt-6">
+                        <label class="block text-sm font-medium text-gray-700">Featured Image <span class="text-gray-500">Max: 2MB</span></label>
+                        <input type="file" name="featured_image" id="featured_image" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                        <div id="image-preview" class="mt-2 hidden">
+                            <img src="" alt="Preview" class="max-w-xs rounded-md border border-gray-300">
+                        </div>
+                    </div>
                     <div class="mt-6 flex justify-end space-x-3">
                         <a href="{{ route('admin.portfolios.index') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md">Cancel</a>
                         <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">Create</button>
@@ -56,5 +62,17 @@
         document.getElementById('title').addEventListener('input', function(e) {
             document.getElementById('slug').value = e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         });
+        document.getElementById('featured_image').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('image-preview');
+                    preview.querySelector('img').src = e.target.result;
+                    preview.classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        });
     </script>
-</x-app-layout>
+</x-admin-layout>
