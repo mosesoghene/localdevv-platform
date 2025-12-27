@@ -8,12 +8,18 @@ class Portfolio extends Model
 {
     protected $fillable = [
         'title',
+        'slug',
         'description',
-        'thumbnail',
+        'client_name',
         'project_url',
+        'project_type',
+        'technologies_used',
+        'completion_date',
+        'featured_image',
+        'is_featured',
+        'thumbnail',
         'technologies',
         'completed_at',
-        'is_featured',
     ];
 
     protected $casts = [

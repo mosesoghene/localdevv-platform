@@ -58,4 +58,31 @@ class FileService
     {
         return Storage::disk('private')->path($path);
     }
+
+    /**
+     * Upload an image file to public storage
+     */
+    public function uploadImage(UploadedFile $file, string $directory = 'images'): string
+    {
+        $timestamp = time();
+        $filename = $timestamp . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
+        
+        $path = $directory . '/' . $filename;
+        
+        Storage::disk('public')->putFileAs($directory, $file, $filename);
+        
+        return $path;
+    }
+
+    /**
+     * Delete an image file from public storage
+     */
+    public function deleteImage(string $path): bool
+    {
+        if (Storage::disk('public')->exists($path)) {
+            return Storage::disk('public')->delete($path);
+        }
+        
+        return false;
+    }
 }

@@ -16,7 +16,12 @@ class Product extends Model
         'product_type',
         'version',
         'file_path',
+        'featured_image',
         'category_id',
+        'demo_url',
+        'documentation_url',
+        'features',
+        'requirements',
     ];
 
     protected $casts = [
