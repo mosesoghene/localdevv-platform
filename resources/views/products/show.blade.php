@@ -67,15 +67,15 @@
                                             <span class="text-green-800 font-medium">You own this product</span>
                                         </div>
                                     </div>
-                                    <a href="#" class="block w-full px-6 py-3 bg-blue-600 text-white text-center font-semibold rounded-lg hover:bg-blue-700 mb-2">
+                                    <a href="{{ route('user.products') }}" class="block w-full px-6 py-3 bg-blue-600 text-white text-center font-semibold rounded-lg hover:bg-blue-700 mb-2">
                                         Download Now
                                     </a>
                                     <p class="text-sm text-gray-600 text-center">Access to lifetime updates</p>
                                 @else
                                     <!-- Purchase button -->
-                                    <button class="w-full px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 mb-2">
+                                    <a href="{{ route('checkout.product', $product) }}" class="block w-full px-6 py-3 bg-blue-600 text-white text-center font-semibold rounded-lg hover:bg-blue-700 mb-2">
                                         Purchase Now
-                                    </button>
+                                    </a>
                                     <p class="text-sm text-gray-600 text-center">Secure payment via payment gateway</p>
                                 @endif
                             @else

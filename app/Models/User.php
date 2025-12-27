@@ -75,6 +75,11 @@ class User extends Authenticatable
         return $this->hasMany(Download::class);
     }
 
+    public function ticketPurchases(): HasMany
+    {
+        return $this->hasMany(TicketPurchase::class);
+    }
+
     // Helper Methods
     public function hasActivePrioritySupport(): bool
     {

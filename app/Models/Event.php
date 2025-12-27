@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Event extends Model
 {
@@ -26,4 +27,22 @@ class Event extends Model
         'event_date' => 'datetime',
         'is_published' => 'boolean',
     ];
+
+    public function ticketTypes(): HasMany
+    {
+        return $this->hasMany(TicketType::class);
+    }
+
+    public function ticketPurchases(): HasMany
+    {
+        return $this->hasMany(TicketPurchase::class);
+    }
+
+    /**
+     * Get active ticket types
+     */
+    public function activeTicketTypes(): HasMany
+    {
+        return $this->ticketTypes()->where('is_active', true);
+    }
 }
