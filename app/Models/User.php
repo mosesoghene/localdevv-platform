@@ -70,6 +70,11 @@ class User extends Authenticatable
         return $this->hasMany(ProjectRequest::class);
     }
 
+    public function downloads(): HasMany
+    {
+        return $this->hasMany(Download::class);
+    }
+
     // Helper Methods
     public function hasActivePrioritySupport(): bool
     {

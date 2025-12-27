@@ -42,4 +42,9 @@ class Product extends Model
     {
         return $this->hasMany(Ticket::class);
     }
+
+    public function downloads(): HasMany
+    {
+        return $this->hasMany(Download::class);
+    }
 }

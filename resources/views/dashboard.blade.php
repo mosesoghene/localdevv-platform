@@ -30,6 +30,22 @@
 
             <!-- Quick Links -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <a href="{{ route('user.products') }}" class="bg-white overflow-hidden shadow-sm sm:rounded-lg hover:shadow-md transition">
+                    <div class="p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-indigo-100 rounded-full p-3">
+                                <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-semibold text-gray-900">My Products</h3>
+                                <p class="text-sm text-gray-600">Download purchased items</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
                 <a href="{{ route('products.index') }}" class="bg-white overflow-hidden shadow-sm sm:rounded-lg hover:shadow-md transition">
                     <div class="p-6">
                         <div class="flex items-center">

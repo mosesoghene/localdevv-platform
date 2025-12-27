@@ -6,6 +6,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ServicePlanController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ProjectRequestController;
+use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\ServicePlanController as AdminServicePlanController;
@@ -28,6 +29,13 @@ Route::get('/events', [EventController::class, 'index'])->name('events.index');
 
 // Project Requests
 Route::post('/project-requests', [ProjectRequestController::class, 'store'])->name('project-requests.store');
+
+// Download Routes (Authenticated Users Only)
+Route::middleware('auth')->group(function () {
+    Route::get('/my-products', [DownloadController::class, 'myProducts'])->name('user.products');
+    Route::post('/download/{product}', [DownloadController::class, 'generateToken'])->name('download.generate');
+    Route::get('/download/{token}', [DownloadController::class, 'download'])->name('download.file');
+});
 
 // Dashboard
 Route::get('/dashboard', function () {
