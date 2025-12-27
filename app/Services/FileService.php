@@ -1,0 +1,53 @@
+<?php
+
+namespace App\Services;
+
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+
+class FileService
+{
+    /**
+     * Upload a product file to private storage
+     */
+    public function uploadProductFile(UploadedFile $file): string
+    {
+        $timestamp = time();
+        $filename = $timestamp . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
+        
+        $path = 'products/' . $filename;
+        
+        Storage::disk('private')->putFileAs('products', $file, $filename);
+        
+        return $path;
+    }
+
+    /**
+     * Delete a product file from private storage
+     */
+    public function deleteProductFile(string $path): bool
+    {
+        if (Storage::disk('private')->exists($path)) {
+            return Storage::disk('private')->delete($path);
+        }
+        
+        return false;
+    }
+
+    /**
+     * Check if file exists
+     */
+    public function fileExists(string $path): bool
+    {
+        return Storage::disk('private')->exists($path);
+    }
+
+    /**
+     * Get file path for download
+     */
+    public function getFilePath(string $path): string
+    {
+        return Storage::disk('private')->path($path);
+    }
+}
