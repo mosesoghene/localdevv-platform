@@ -28,7 +28,7 @@ class HomeController extends Controller
             ->take(6)
             ->get();
 
-        return view('welcome', compact('featuredProducts', 'upcomingEvents', 'featuredPortfolios'));
+        return view('home', compact('featuredProducts', 'upcomingEvents', 'featuredPortfolios'));
     }
 
     public function storeProjectRequest(Request $request)

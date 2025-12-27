@@ -1,27 +1,20 @@
 <?php
 
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ServicePlanController;
-use App\Http\Controllers\EventController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-// Public Routes
-Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/', function () {
+    return view('welcome');
+});
 
-// Products
-Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
-// Service Plans
-Route::get('/service-plans', [ServicePlanController::class, 'index'])->name('service-plans.index');
-Route::get('/service-plans/{servicePlan}', [ServicePlanController::class, 'show'])->name('service-plans.show');
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
-// Events
-Route::get('/events', [EventController::class, 'index'])->name('events.index');
-
-// Project Requests
-Route::post('/project-requests', [HomeController::class, 'storeProjectRequest'])->name('project-requests.store');
-
-// Authentication routes will be added by Laravel Breeze
-// Admin routes will be added after authentication is set up
+require __DIR__.'/auth.php';
