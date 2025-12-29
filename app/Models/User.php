@@ -80,6 +80,11 @@ class User extends Authenticatable
         return $this->hasMany(TicketPurchase::class);
     }
 
+    public function supportTickets(): HasMany
+    {
+        return $this->hasMany(SupportTicket::class);
+    }
+
     // Helper Methods
     public function hasActivePrioritySupport(): bool
     {
